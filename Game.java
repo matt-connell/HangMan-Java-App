@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Game extends JFrame{
-    JPanel topPanel;
-    JPanel midPanel;
-
-    JButton submit;
-    JLabel label;
-    JTextField text;
+    final JFrame popup;
+    JPanel topPanel, lowPanel;
+    JPopupMenu menu;
+    public JButton submit;
+    public JLabel label, nothing;
+    public JTextField text;
     String hiddenWord;
     ArrayList<Character>hiddenWordList = new ArrayList<>();
     ArrayList<Character>guessList = new ArrayList<>();
@@ -28,21 +28,38 @@ public class Game extends JFrame{
         super("HangMan");
         setLayout(new BorderLayout());
 
+        //popup window
+        popup = new JFrame();
+        submit = new JButton("Confirm");
+        popup.add(submit);
+        popup.pack();
+        popup.setAlwaysOnTop(true);
+        popup.setVisible(true);
+        popup.setSize(50,50);
+
+
         //this will be the top panel that is displayed to get user input
         topPanel = new JPanel();
         label = new JLabel("Enter Hidden Word: ");
-        topPanel.add(label);
-        text = new JTextField(10);
-        topPanel.add(text);
-        submit = new JButton("Confirm");
-        topPanel.add(submit);
+        nothing = new JLabel();
+
+        //topPanel.add(label);
+        //text = new JTextField(10);
+        //text.add(menu);
+        //text.setComponentPopupMenu(menu);
+        //topPanel.add(text);
+        //submit = new JButton("Confirm");
+        //topPanel.add(submit);
 
         GamePanel gp = new GamePanel();
+
+        lowPanel = new JPanel();
+
         add(gp, BorderLayout.CENTER);
 
         //add to north part of frame
         add(topPanel, BorderLayout.NORTH);
-
+        add(lowPanel, BorderLayout.SOUTH);
         System.out.println("\t\t________");
         System.out.println("\t\t|");
         System.out.println("\t\t|");
@@ -57,8 +74,8 @@ public class Game extends JFrame{
         submit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(text.getText() + "\n");
-                hiddenWord = text.getText();
+                String hiddenWord = JOptionPane.showInputDialog(popup,"Enter a string...");
+
                 int spaceCount = 0;
                 for (int i = 0; i < hiddenWord.length(); i++){
                     int temp = i;
@@ -76,7 +93,7 @@ public class Game extends JFrame{
                     //set i back to correct index after lookahead
                     i = temp;
                 }
-
+                popup.setVisible(false);
                 System.out.print("\nHiddenWordList: ");
                 for (char ch: hiddenWordList){
                     if (ch == ' ')
@@ -86,14 +103,21 @@ public class Game extends JFrame{
                     
                 }
                 System.out.println("");
+                try {
+                    Thread.sleep(1500);
+                } catch (Exception err) {
+                    //TODO: handle exception
+                }
                 guessingFunction();
-                
+
             }
 
         });
     }
 
+
     public void guessingFunction(){
+
         while(true){
             //this will display the guessed incorrect letters and remaining lives, if there is any
             if (!guessList.isEmpty()){
