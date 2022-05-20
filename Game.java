@@ -7,11 +7,15 @@ import java.util.Scanner;
 
 public class Game extends JFrame{
     final JFrame popup;
-    JPanel topPanel, lowPanel;
+    JPanel topPanel, lowPanel, wordPanel, livesPanel;
     JPopupMenu menu;
-    public JButton submit;
-    public JLabel label, nothing;
-    public JTextField text;
+    JButton submit;
+    JLabel label, nothing, topNothing;
+    JTextField text;
+    JLabel livesLabel, guessedLabel, wordLabel;
+
+
+
     String hiddenWord;
     ArrayList<Character>hiddenWordList = new ArrayList<>();
     ArrayList<Character>guessList = new ArrayList<>();
@@ -20,8 +24,7 @@ public class Game extends JFrame{
     
     Integer incorrectGuessCount = 0;
 
-    ImageIcon backgroundImg;
-
+    GamePanel gp;
     Scanner reader = new Scanner(System.in);
 
     public Game(){
@@ -37,37 +40,34 @@ public class Game extends JFrame{
         popup.setVisible(true);
         popup.setSize(50,50);
 
+        gp = new GamePanel();
 
-        //this will be the top panel that is displayed to get user input
-        topPanel = new JPanel();
-        label = new JLabel("Enter Hidden Word: ");
-        nothing = new JLabel();
+        wordPanel = new JPanel();
+        wordPanel.setLayout(new BorderLayout());
+        wordLabel = new JLabel("   ", SwingConstants.CENTER);
+        wordLabel.setFont(new Font("Monospace", Font.BOLD, 20));
+        nothing = new JLabel("                           ");
+        topNothing = new JLabel("                           ");
+        wordPanel.add(wordLabel);
+        wordPanel.add(nothing, BorderLayout.SOUTH);
+        //wordPanel.add(topNothing, BorderLayout.NORTH);
 
-        //topPanel.add(label);
-        //text = new JTextField(10);
-        //text.add(menu);
-        //text.setComponentPopupMenu(menu);
-        //topPanel.add(text);
-        //submit = new JButton("Confirm");
-        //topPanel.add(submit);
 
-        GamePanel gp = new GamePanel();
+        livesPanel = new JPanel();
+        livesPanel.setLayout(new GridLayout(0,2));
+        livesLabel = new JLabel("Lives Remaining: ", SwingConstants.CENTER);
+        guessedLabel = new JLabel("Guessed Letters: ", SwingConstants.CENTER);
+
+        livesPanel.add(livesLabel);
+        livesPanel.add(guessedLabel);
 
         lowPanel = new JPanel();
-
+        lowPanel.setBackground(Color.WHITE);
+        lowPanel.setLayout(new BorderLayout());
+        lowPanel.add(wordPanel);
+        lowPanel.add(livesPanel, BorderLayout.SOUTH);
         add(gp, BorderLayout.CENTER);
-
-        //add to north part of frame
-        add(topPanel, BorderLayout.NORTH);
         add(lowPanel, BorderLayout.SOUTH);
-        System.out.println("\t\t________");
-        System.out.println("\t\t|");
-        System.out.println("\t\t|");
-        System.out.println("\t\t|");
-        System.out.println("\t\t|");
-        System.out.println("\t\t|");
-        System.out.println("\t\t|");
-        System.out.println("\t________|___________");
 
 
         //when user clicks confirm
@@ -77,22 +77,29 @@ public class Game extends JFrame{
                 String hiddenWord = JOptionPane.showInputDialog(popup,"Enter a string...");
 
                 int spaceCount = 0;
+                String wordStr = "";
                 for (int i = 0; i < hiddenWord.length(); i++){
                     int temp = i;
                     //add letter to the arraylist
                     if (hiddenWord.charAt(i) != ' '){
                         hiddenWordList.add(hiddenWord.charAt(i));
                         foundWordsList.add('_');
+                        wordStr += "_ ";
 
                     } else if (hiddenWord.charAt(i) == ' '){
                         hiddenWordList.add(' ');
                         spaceCount++;
-                    }  else {
-                    }
+                        wordStr += "   ";
+                    } 
 
                     //set i back to correct index after lookahead
                     i = temp;
                 }
+                wordStr += "\n\n";
+
+                wordLabel.setText(wordStr);
+                wordLabel.paintImmediately(wordLabel.getVisibleRect());
+
                 popup.setVisible(false);
                 System.out.print("\nHiddenWordList: ");
                 for (char ch: hiddenWordList){
@@ -122,10 +129,23 @@ public class Game extends JFrame{
             //this will display the guessed incorrect letters and remaining lives, if there is any
             if (!guessList.isEmpty()){
                 System.out.print("\nGuessed Letters: ");
+                String guessStr = "Guessed Letters: ";
                 for (char ch: guessList){
                     System.out.print(ch + " ");
+                    guessStr = guessStr + " " + ch;
                 }
+                guessedLabel.setText(guessStr);
+                guessedLabel.paintImmediately(guessedLabel.getVisibleRect());
+                livesLabel.setText("Lives Remaining: " + (6-incorrectGuessCount));
+                livesLabel.paintImmediately(livesLabel.getVisibleRect());
                 System.out.println("\nLives Remaining: " + (6-incorrectGuessCount));
+                lowPanel.revalidate();
+                gp.setBackground(incorrectGuessCount);
+                System.out.println("igc = " + incorrectGuessCount);
+                //gp.repaint();
+                gp.validate();
+
+                repaint();
             }
 
             //get input from the user
@@ -160,23 +180,36 @@ public class Game extends JFrame{
 
             //this will display word/
             int spaceCount = 0;
+            String wordStr = "";
             for (int i = 0; i < hiddenWordList.size(); i++){
                 if (hiddenWordList.get(i) != ' '){
                     System.out.print(foundWordsList.get(i-spaceCount) + " ");
+                    wordStr = wordStr + foundWordsList.get(i-spaceCount) + " ";
                 }
 
                 if(hiddenWordList.get(i) == ' '){
                     System.out.print("   ");
                     spaceCount++;
+                    wordStr += "   ";
                 }
 
             }
+            wordStr += "\n\n";
+
+            wordLabel.setText(wordStr);                
+            wordLabel.paintImmediately(wordLabel.getVisibleRect());
+
             //if this is true, user has won the game
             if (!foundWordsList.contains('_')){
                 System.out.println("\nyou have won the game!!!!!");
+                wordLabel.setText("you won!!!!\n");
+                wordLabel.paintImmediately(wordLabel.getVisibleRect());
+
                 break;
             } else if (incorrectGuessCount >= 5){
                 System.out.println("\nyou lost my brotha :(");
+                wordLabel.setText("you lost :(\n");
+                wordLabel.paintImmediately(wordLabel.getVisibleRect());
                 break;
             }
 

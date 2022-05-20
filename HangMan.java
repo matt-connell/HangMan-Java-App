@@ -7,7 +7,7 @@ public class HangMan {
         Game frame = new Game();
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500,375);
+        frame.setSize(500,425);
         frame.setVisible(true);
     }
 }
