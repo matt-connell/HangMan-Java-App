@@ -143,7 +143,6 @@ public class Game extends JFrame{
                 gp.setBackground(incorrectGuessCount);
                 System.out.println("igc = " + incorrectGuessCount);
                 //gp.repaint();
-                gp.validate();
 
                 repaint();
             }
@@ -176,6 +175,8 @@ public class Game extends JFrame{
                 //add to the guessed words list
                 guessList.add(c);
                 incorrectGuessCount++;
+                gp.setBackground(incorrectGuessCount);
+
             }
 
             //this will display word/
@@ -204,12 +205,15 @@ public class Game extends JFrame{
                 System.out.println("\nyou have won the game!!!!!");
                 wordLabel.setText("you won!!!!\n");
                 wordLabel.paintImmediately(wordLabel.getVisibleRect());
+                gp.setBackground(incorrectGuessCount);
 
                 break;
             } else if (incorrectGuessCount >= 5){
                 System.out.println("\nyou lost my brotha :(");
                 wordLabel.setText("you lost :(\n");
                 wordLabel.paintImmediately(wordLabel.getVisibleRect());
+                gp.setBackground(incorrectGuessCount);
+
                 break;
             }
 
