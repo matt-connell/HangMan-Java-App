@@ -40,7 +40,7 @@ public class Game extends JFrame{
         popup.setVisible(true);
         popup.setSize(50,50);
 
-        gp = new GamePanel();
+        gp = new GamePanel(0);
 
         wordPanel = new JPanel();
         wordPanel.setLayout(new BorderLayout());
@@ -126,6 +126,7 @@ public class Game extends JFrame{
     public void guessingFunction(){
 
         while(true){
+            
             //this will display the guessed incorrect letters and remaining lives, if there is any
             if (!guessList.isEmpty()){
                 System.out.print("\nGuessed Letters: ");
@@ -140,11 +141,11 @@ public class Game extends JFrame{
                 livesLabel.paintImmediately(livesLabel.getVisibleRect());
                 System.out.println("\nLives Remaining: " + (6-incorrectGuessCount));
                 lowPanel.revalidate();
-                gp.setBackground(incorrectGuessCount);
-                System.out.println("igc = " + incorrectGuessCount);
-                //gp.repaint();
+                gp.setCurrentImg(incorrectGuessCount);
 
-                repaint();
+                System.out.println("igc = " + incorrectGuessCount);
+                gp.repaint();
+
             }
 
             //get input from the user
@@ -175,7 +176,7 @@ public class Game extends JFrame{
                 //add to the guessed words list
                 guessList.add(c);
                 incorrectGuessCount++;
-                gp.setBackground(incorrectGuessCount);
+                gp.setCurrentImg(incorrectGuessCount);
 
             }
 
@@ -200,19 +201,21 @@ public class Game extends JFrame{
             wordLabel.setText(wordStr);                
             wordLabel.paintImmediately(wordLabel.getVisibleRect());
 
+            gp = new GamePanel(incorrectGuessCount);
+            add(gp, BorderLayout.CENTER);
             //if this is true, user has won the game
             if (!foundWordsList.contains('_')){
                 System.out.println("\nyou have won the game!!!!!");
                 wordLabel.setText("you won!!!!\n");
                 wordLabel.paintImmediately(wordLabel.getVisibleRect());
-                gp.setBackground(incorrectGuessCount);
+                gp.setCurrentImg(incorrectGuessCount);
 
                 break;
             } else if (incorrectGuessCount >= 5){
                 System.out.println("\nyou lost my brotha :(");
                 wordLabel.setText("you lost :(\n");
                 wordLabel.paintImmediately(wordLabel.getVisibleRect());
-                gp.setBackground(incorrectGuessCount);
+                gp.setCurrentImg(incorrectGuessCount);
 
                 break;
             }
@@ -220,4 +223,5 @@ public class Game extends JFrame{
             System.out.println("");
         }
     }
+    
 }
